@@ -4,11 +4,19 @@ from optimizer import Optimizer, required
 
 class SplitSGD(Optimizer):
 
-	def __init__(self, params, lr. w, l, q, B, t1, theta0, gamma):
+	def __init__(self, params, config= {}):
+	# def __init__(self, params, lr. w, l, q, B, t1, theta0, gamma, config= {}):
 		# lr == learining rate, ita
 		# w == windows
 		# l == length of each window, has the same function as mini batch parameter as in mini batch SGD
 		# theta0 == starting point of Splitting Diagnostic
+		defaults = dict(lr=0.01, w=0, l=0, q=0, B=0, t1=0, theta0=0, gamma=0 )
+		
+		for k in defaults:
+			if config.get(k,None) is None:
+				config[k] = defaluts[k]
+		super(SplitSGD, self).__init__(params, config)
+		self.config = config		
 
 	def SplittingDiagnostic(self, w, l, q, theta):
 		theta0_1 = theta
