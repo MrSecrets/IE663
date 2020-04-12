@@ -10,8 +10,11 @@ class SplitSGD(Optimizer):
 		# w == windows
 		# l == length of each window, has the same function as mini batch parameter as in mini batch SGD
 		# theta0 == starting point of Splitting Diagnostic
-		defaults = dict(lr=0.01, w=0, l=0, q=0, B=0, t1=0, theta0=0, gamma=0 )
-		
+		# K = number of threads
+		# defaults = dict(lr=0.01, w=0, l=0, q=0, B=0, t1=0, theta0=0, gamma=0 )
+		defaults = dict(lr=0.01, w=0, q=0, t1=0, gamma=0, K=2, mom=0, l=1 )
+		l = len(mini_batch)
+
 		for k in defaults:
 			if config.get(k,None) is None:
 				config[k] = defaluts[k]
@@ -25,7 +28,7 @@ class SplitSGD(Optimizer):
 
 		for i in range(1,w+1):
 
-			for k in range(1,3):
+			for k in range(K):
 
 				for j in range(l):
 
@@ -38,22 +41,21 @@ class SplitSGD(Optimizer):
 			# TD == 1 indicates S(stationary) and 0 indicates N
 		return theta_D, TD
 
-	def main(self,): #TODO rest 
+	def main(self,lr,gamma,t1, mom): #TODO rest 
 		# this is the main SPlitSGD
 
 		ita = lr
 		theta_1_in = theta0
-
+		t = t1
 		for b in range(1,B+1):
 			# TODO SGD stuff
+			optim_SGD = optim.SGD(net.params() , lr=lr, momentum=mom)
 			theta_last = SGD(theta_in[b])
 			Theta_Db,Td = self.SplittingDiagnostic()
 
 			if Td:
-				lr = gamma.lr
-				t(i+1) = t(i)/gamma
-			else:
-				t(i+1) = t(i)
+				lr = gamma*lr
+				t = t/gamma
 			
 
 
